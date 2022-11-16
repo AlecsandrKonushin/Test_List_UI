@@ -1,6 +1,6 @@
+using DG.Tweening;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,6 +15,10 @@ namespace Test
         [SerializeField] private int layoutPrioruty;
         [SerializeField] private Vector4 padding;
         [SerializeField] private float spacing;
+
+        [SerializeField] private float animationSpeed = 0.5f;
+        [SerializeField] private Ease ease = Ease.OutSine;
+        [SerializeField] private Vector2 newElementOffset = new Vector2(100, 0);
 
         private Vector2 minSize;
         private Vector2 preferredSize;
@@ -39,12 +43,15 @@ namespace Test
 
             ChildData MapToChildData(RectTransform childTransform)
             {
+                childTransform.TryGetComponent<CanvasGroup>(out var canvasGroup);
                 childTransform.TryGetComponent<ILayoutIgnorer>(out var ignorer);
 
                 return new ChildData
                 {
+                    CanvasGroup = canvasGroup,
                     Transform = childTransform,
-                    Ignorer = ignorer
+                    Ignorer = ignorer,
+                    IsNew = !childrenData.Any(cd => ReferenceEquals(childTransform, cd.Transform))
                 };
             }
         }
@@ -182,8 +189,6 @@ namespace Test
                 childData.Size.x = size.x - padding.x - padding.z;
                 childData.Size.y = childPreferredHeight > childMinHeight ? childPreferredHeight : childMinHeight;
 
-                Debug.Log($" childData.Size.y = { childData.Size.y} childPreferredHeight = {childPreferredHeight} childMinHeight = {childMinHeight}");
-
                 childData.Position.x = padding.x;
                 childData.Position.y = -y;
                 y += childData.Size.y + spacing;
@@ -200,6 +205,56 @@ namespace Test
 
         private void ApplyChildrenSizes()
         {
+            if (!Application.isPlaying)
+            {
+                ApplyChildrenSizesImmediate();
+            }
+            else
+            {
+                ApplyChildrenSizesAnimated();
+            }
+        }
+
+        private void ApplyChildrenSizesAnimated()
+        {
+            for (int i = 0; i < childrenData.Length; i++)
+            {
+                ref var child = ref childrenData[i];
+
+                if (child.IsIgnored) continue;
+
+                child.Transform.pivot = Vector2.up;
+                child.Transform.anchorMin = Vector2.up;
+                child.Transform.anchorMax = Vector2.up;
+
+                child.Transform.sizeDelta = child.Size;
+                child.Transform.DOKill();
+
+                if (child.IsNew)
+                {
+                    if(child.CanvasGroup != null)
+                    {
+                        child.CanvasGroup.DOKill();
+                        child.CanvasGroup.alpha = 0;
+                        child.CanvasGroup.DOFade(1, animationSpeed).SetEase(ease);
+                    }
+
+                    child.Transform.anchoredPosition = child.Position + newElementOffset;
+                    child.Transform.DOAnchorPos(child.Position, animationSpeed).SetEase(ease);
+                    child.IsNew = false;
+                }
+                else
+                {
+                    if (child.Position != child.Transform.anchoredPosition)
+                    {
+                        child.Transform.DOAnchorPos(child.Position, animationSpeed).SetEase(ease);
+                    }
+                }
+            }
+        }
+
+        private void ApplyChildrenSizesImmediate()
+        {
             for (int i = 0; i < childrenData.Length; i++)
             {
                 ref var child = ref childrenData[i];
@@ -212,6 +267,11 @@ namespace Test
 
                 child.Transform.sizeDelta = child.Size;
                 child.Transform.anchoredPosition = child.Position;
+
+                if(child.CanvasGroup != null)
+                {
+                    child.CanvasGroup.alpha = 1;
+                }
             }
         }
     }
@@ -220,8 +280,10 @@ namespace Test
     {
         public ILayoutIgnorer Ignorer;
         public RectTransform Transform;
+        public CanvasGroup CanvasGroup;
         public Vector2 Position;
         public Vector2 Size;
+        public bool IsNew;
 
         public bool IsIgnored => Ignorer?.ignoreLayout ?? false;
     }

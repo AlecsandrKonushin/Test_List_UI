@@ -24,8 +24,12 @@ namespace Test
             {
                 for (int i = 0; i < countTiles; i++)
                 {
+                    string descriptionTile = "Description";
+                    int numberTile = Random.Range(0, 100);
+
                     Tile newTile = Creator.Instance.CreateTileList();
                     container.AddTile(newTile);
+                    newTile.SetData(descriptionTile, numberTile);
                 }
             }            
         }
