@@ -12,8 +12,6 @@ namespace Test
 
         private int countContainers = 2, countTiles = 5;
 
-        private Tile dragTile;
-
         private void Start()
         {
             for (int i = 0; i < countContainers; i++)
@@ -42,7 +40,6 @@ namespace Test
 
         public void BeginDragTile(Tile tile)
         {
-            dragTile = tile;
             tile.transform.SetParent(parentDragTile.transform);
         }
 

@@ -34,6 +34,7 @@ namespace Test
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            myContainer.RemoveTile(this);
             listWindow.BeginDragTile(this);
         }
 
