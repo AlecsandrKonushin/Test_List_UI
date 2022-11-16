@@ -34,7 +34,7 @@ namespace Test
                     int numberTile = Random.Range(0, 100);
 
                     Tile newTile = Creator.Instance.CreateTileList();
-                    container.AddTile(newTile);
+                    container.AddTileInEnd(newTile);
                     newTile.SetData(this, descriptionTile, numberTile);
                 }
             }
@@ -44,6 +44,24 @@ namespace Test
         {
             dragTile = tile;
             tile.transform.SetParent(parentDragTile.transform);
+        }
+
+        public void EndDragTile(Tile tile)
+        {
+            float minDistance = Mathf.Abs(tile.transform.position.x - containers[0].transform.position.x);
+            ContainerTiles needContainer = containers[0];
+
+            foreach (var container in containers)
+            {
+                float distance = Mathf.Abs(tile.transform.position.x - container.transform.position.x);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    needContainer = container;
+                }
+            }
+
+            needContainer.AddTileInCenter(tile);
         }
     }
 }

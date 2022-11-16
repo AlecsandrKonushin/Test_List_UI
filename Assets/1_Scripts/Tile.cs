@@ -10,8 +10,11 @@ namespace Test
         [SerializeField] private Text descriptionText, numberText;
 
         private ListWindow listWindow;
+        private ContainerTiles myContainer;
         private RectTransform rectTransform;
         private Canvas canvas;
+
+        public ContainerTiles SetContainer { set => myContainer = value; }
 
         private void Awake()
         {
@@ -28,6 +31,7 @@ namespace Test
             canvas = GetComponentInParent<Canvas>();
         }
 
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             listWindow.BeginDragTile(this);
@@ -40,6 +44,7 @@ namespace Test
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            listWindow.EndDragTile(this);
         }
     }
 }
