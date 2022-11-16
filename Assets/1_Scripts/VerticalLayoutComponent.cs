@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace Test
 {
     [RequireComponent(typeof(RectTransform)), ExecuteAlways]
-    public class VerticalLayoutComponent : UIBehaviour, ILayoutElement
+    public class VerticalLayoutComponent : UIBehaviour, ILayoutElement, ILayoutGroup
     {
         [SerializeField] private Vector2 flexibleSize;
         [SerializeField] private int layoutPrioruty;
@@ -19,6 +19,7 @@ namespace Test
         private Vector2 minSize;
         private Vector2 preferredSize;
         private ChildData[] childrenData = Array.Empty<ChildData>();
+        protected DrivenRectTransformTracker tracker;
 
         public float minWidth => minSize.x;
         public float minHeight => minSize.y;
@@ -54,6 +55,13 @@ namespace Test
 
             GatherChildren();
             SetDirty();
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            tracker.Clear();
         }
 
         private void OnTransformChildrenChanged()
@@ -101,6 +109,110 @@ namespace Test
             base.OnDidApplyAnimationProperties();
 
             SetDirty();
+        }
+
+        public void CalculateLayoutInputHorizontal()
+        {
+            minSize.x = 0;
+            preferredSize.x = 0;
+
+            for (int i = 0; i < childrenData.Length; i++)
+            {
+                ref var childData = ref childrenData[i];
+
+                if (childData.IsIgnored) continue;
+
+                var childMinWidth = LayoutUtility.GetMinWidth(childData.Transform);
+                var childPreferredWidth = LayoutUtility.GetPreferredWidth(childData.Transform);
+
+                if (minSize.x < childMinWidth)
+                {
+                    minSize.x = childMinWidth;
+                }
+
+                if (preferredSize.x < childPreferredWidth)
+                {
+                    preferredSize.x = childPreferredWidth;
+                }
+            }
+
+            minSize.x += padding.x + padding.z;
+            preferredSize.x += padding.x + padding.z;
+        }
+
+        public void CalculateLayoutInputVertical()
+        {
+            minSize.y = 0;
+            preferredSize.y = 0;
+
+            for (int i = 0; i < childrenData.Length; i++)
+            {
+                ref var childData = ref childrenData[i];
+
+                if (childData.IsIgnored) continue;
+
+                var childMinHeight = LayoutUtility.GetMinHeight(childData.Transform);
+                var childPreferredHeight = LayoutUtility.GetPreferredHeight(childData.Transform);
+
+                minSize.y += childMinHeight + spacing;
+                preferredSize.y += childPreferredHeight + spacing;
+            }
+
+            minSize.y += padding.y + padding.w - spacing;
+            preferredSize.y += padding.y + padding.w - spacing;
+        }
+
+        public void SetLayoutHorizontal() { }
+
+        public void SetLayoutVertical()
+        {
+            tracker.Clear();
+            var size = ((RectTransform)transform).rect.size;
+            var y = padding.y;
+
+            for (int i = 0; i < childrenData.Length; i++)
+            {
+                ref var childData = ref childrenData[i];
+
+                if (childData.IsIgnored) continue;
+
+                var childMinHeight = LayoutUtility.GetMinHeight(childData.Transform);
+                var childPreferredHeight = LayoutUtility.GetPreferredHeight(childData.Transform);
+
+                childData.Size.x = size.x - padding.x - padding.z;
+                childData.Size.y = childPreferredHeight > childMinHeight ? childPreferredHeight : childMinHeight;
+
+                Debug.Log($" childData.Size.y = { childData.Size.y} childPreferredHeight = {childPreferredHeight} childMinHeight = {childMinHeight}");
+
+                childData.Position.x = padding.x;
+                childData.Position.y = -y;
+                y += childData.Size.y + spacing;
+
+                tracker.Add(this, childData.Transform,
+                    DrivenTransformProperties.Anchors
+                    | DrivenTransformProperties.Pivot
+                    | DrivenTransformProperties.AnchoredPosition
+                    | DrivenTransformProperties.SizeDelta);
+            }
+
+            ApplyChildrenSizes();
+        }
+
+        private void ApplyChildrenSizes()
+        {
+            for (int i = 0; i < childrenData.Length; i++)
+            {
+                ref var child = ref childrenData[i];
+
+                if (child.IsIgnored) continue;
+
+                child.Transform.anchorMin = Vector2.up;
+                child.Transform.anchorMax = Vector2.up;
+                child.Transform.pivot = Vector2.up;
+
+                child.Transform.sizeDelta = child.Size;
+                child.Transform.anchoredPosition = child.Position;
+            }
         }
     }
 

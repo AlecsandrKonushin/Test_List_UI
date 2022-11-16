@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2599885308272143169}
   - component: {fileID: 2599885308272143168}
   - component: {fileID: 2599885308272143175}
-  - component: {fileID: 6802578524966261548}
+  - component: {fileID: 1801030592815897714}
   m_Layer: 5
   m_Name: ContainerTiles_Prefab
   m_TagString: Untagged
@@ -34,10 +34,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -350, y: 0}
-  m_SizeDelta: {x: 500, y: -100}
+  m_SizeDelta: {x: 500, y: 900}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2599885308272143169
 CanvasRenderer:
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69d33577538ef1846964a25a903a2df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6802578524966261548
+--- !u!114 &1801030592815897714
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,20 +98,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2599885308272143173}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 517f505298a5b5142bfa42e195ed6dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 50
-    m_Bottom: 50
-  m_ChildAlignment: 1
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  flexibleSize: {x: 0, y: 0}
+  layoutPrioruty: 0
+  padding: {x: 50, y: 50, z: 50, w: 50}
+  spacing: 20
