@@ -1,16 +1,45 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Test
 {
-    public class Tile : MonoBehaviour
+    [RequireComponent(typeof(RectTransform))]
+    public class Tile : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Text descriptionText, numberText;
 
-        public void SetData(string description, int number)
+        private ListWindow listWindow;
+        private RectTransform rectTransform;
+        private Canvas canvas;
+
+        private void Awake()
         {
+            rectTransform = GetComponent<RectTransform>();
+        }
+
+        public void SetData(ListWindow listWindow, string description, int number)
+        {
+            this.listWindow = listWindow;
+
             descriptionText.text = description;
             numberText.text = number.ToString();
+
+            canvas = GetComponentInParent<Canvas>();
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            listWindow.BeginDragTile(this);
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
         }
     }
 }

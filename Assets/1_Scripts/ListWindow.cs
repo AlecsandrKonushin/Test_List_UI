@@ -6,10 +6,13 @@ namespace Test
     public class ListWindow : MonoBehaviour
     {
         [SerializeField] private GameObject parentContainers;
+        [SerializeField] private GameObject parentDragTile;
 
         private List<ContainerTiles> containers = new List<ContainerTiles>();
 
         private int countContainers = 2, countTiles = 5;
+
+        private Tile dragTile;
 
         private void Start()
         {
@@ -17,8 +20,11 @@ namespace Test
             {
                 ContainerTiles newContainer = Creator.Instance.CreateContainer();
                 containers.Add(newContainer);
+
                 newContainer.transform.SetParent(parentContainers.transform);
-            }            
+                newContainer.transform.localScale = new Vector3(1, 1, 1);
+                newContainer.transform.position = new Vector3(0, 0, 0);
+            }
 
             foreach (var container in containers)
             {
@@ -29,9 +35,15 @@ namespace Test
 
                     Tile newTile = Creator.Instance.CreateTileList();
                     container.AddTile(newTile);
-                    newTile.SetData(descriptionTile, numberTile);
+                    newTile.SetData(this, descriptionTile, numberTile);
                 }
-            }            
+            }
+        }
+
+        public void BeginDragTile(Tile tile)
+        {
+            dragTile = tile;
+            tile.transform.SetParent(parentDragTile.transform);
         }
     }
 }

@@ -11,6 +11,8 @@ namespace Test
         {
             tiles.Add(tile);
             tile.transform.SetParent(transform);
+            tile.transform.localScale = new Vector3(1, 1, 1);
+            tile.transform.position = new Vector3(0, 0, 0);
         }
     }
 }
