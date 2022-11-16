@@ -18,30 +18,26 @@ namespace Test
 
         public void AddTileInCenter(Tile tile)
         {
-            float minDistance = Mathf.Abs(tile.transform.position.y - tiles[0].transform.position.y);
-            int indexTile = tiles[0].transform.GetSiblingIndex();
+            int indexTile = 0;
 
-            if (tile.transform.position.y < tiles[tiles.Count - 1].transform.position.y)
+            if (tiles.Count > 0)
             {
-                indexTile = tiles.Count;
-            }
-            else
-            {
+                indexTile = tiles[0].transform.GetSiblingIndex();
+
+                float minDistance = Mathf.Abs(tile.transform.position.y - tiles[0].transform.position.y);
+
                 for (int i = 0; i < tiles.Count; i++)
                 {
-                    float distance = Mathf.Abs((Mathf.Abs)tile.transform.position.y - (Mathf.Abs)tiles[i].transform.position.y);
+                    float distance = Mathf.Abs(tile.transform.position.y - tiles[i].transform.position.y);
 
                     if (distance < minDistance)
                     {
-                        Debug.Log($"min = {tiles[i].gameObject.name}");
 
                         minDistance = distance;
-                        indexTile = tiles[i].transform.GetSiblingIndex();
+                        indexTile = tiles[i].transform.GetSiblingIndex() + 1;
                     }
                 }
             }
-
-            Debug.Log($"indexTile = {indexTile}");
 
             tile.transform.SetParent(transform);
             tile.transform.SetSiblingIndex(indexTile);
