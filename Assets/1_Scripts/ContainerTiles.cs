@@ -34,7 +34,7 @@ namespace Test
                     {
 
                         minDistance = distance;
-                        indexTile = tiles[i].transform.GetSiblingIndex() + 1;
+                        indexTile = tiles[i].transform.GetSiblingIndex();
                     }
                 }
             }

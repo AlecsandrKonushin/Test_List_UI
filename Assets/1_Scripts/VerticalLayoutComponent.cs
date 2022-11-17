@@ -18,7 +18,6 @@ namespace Test
 
         [SerializeField] private float animationSpeed = 0.5f;
         [SerializeField] private Ease ease = Ease.OutSine;
-        //[SerializeField] private Vector2 newElementOffset = new Vector2(100, 0);
 
         private Vector2 minSize;
         private Vector2 preferredSize;
@@ -50,8 +49,7 @@ namespace Test
                 {
                     CanvasGroup = canvasGroup,
                     Transform = childTransform,
-                    Ignorer = ignorer,
-                    //IsNew = !childrenData.Any(cd => ReferenceEquals(childTransform, cd.Transform))
+                    Ignorer = ignorer
                 };
             }
         }
@@ -230,26 +228,10 @@ namespace Test
                 child.Transform.sizeDelta = child.Size;
                 child.Transform.DOKill();
 
-                //if (child.IsNew)
-                //{
-                //    if(child.CanvasGroup != null)
-                //    {
-                //        child.CanvasGroup.DOKill();
-                //        child.CanvasGroup.alpha = 0;
-                //        child.CanvasGroup.DOFade(1, animationSpeed).SetEase(ease);
-                //    }
-
-                //    child.Transform.anchoredPosition = child.Position + newElementOffset;
-                //    child.Transform.DOAnchorPos(child.Position, animationSpeed).SetEase(ease);
-                //    child.IsNew = false;
-                //}
-                //else
-                //{
-                    if (child.Position != child.Transform.anchoredPosition)
-                    {
-                        child.Transform.DOAnchorPos(child.Position, animationSpeed).SetEase(ease);
-                    }
-                //}
+                if (child.Position != child.Transform.anchoredPosition)
+                {
+                    child.Transform.DOAnchorPos(child.Position, animationSpeed).SetEase(ease);
+                }
             }
         }
 
@@ -268,7 +250,7 @@ namespace Test
                 child.Transform.sizeDelta = child.Size;
                 child.Transform.anchoredPosition = child.Position;
 
-                if(child.CanvasGroup != null)
+                if (child.CanvasGroup != null)
                 {
                     child.CanvasGroup.alpha = 1;
                 }
@@ -283,7 +265,6 @@ namespace Test
         public CanvasGroup CanvasGroup;
         public Vector2 Position;
         public Vector2 Size;
-        //public bool IsNew;
 
         public bool IsIgnored => Ignorer?.ignoreLayout ?? false;
     }

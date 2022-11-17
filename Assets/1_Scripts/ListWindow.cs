@@ -10,6 +10,7 @@ namespace Test
 
         private List<ContainerTiles> containers = new List<ContainerTiles>();
 
+        private Tile fakeTile;
         private int countContainers = 2, countTiles = 5;
 
         private void Start()
@@ -31,20 +32,34 @@ namespace Test
                     string descriptionTile = "Description";
                     int numberTile = Random.Range(0, 100);
 
-                    Tile newTile = Creator.Instance.CreateTileList();
+                    Tile newTile = Creator.Instance.CreateTile();
                     container.AddTileInEnd(newTile);
-                    newTile.SetData(this, descriptionTile, numberTile);
+                    newTile.SetData(this);
+                    newTile.DescriptionText = descriptionTile;
+                    newTile.NumberText = numberTile.ToString();
                 }
             }
+
+            fakeTile = Creator.Instance.CreateTile();
+            fakeTile.transform.SetParent(parentDragTile.transform);
+            fakeTile.transform.localScale = new Vector3(1, 1, 1);
+            fakeTile.gameObject.SetActive(false);
+            fakeTile.gameObject.AddComponent<MoveFakeTile>();
         }
 
         public void BeginDragTile(Tile tile)
         {
-            tile.transform.SetParent(parentDragTile.transform);
+            fakeTile.GetComponent<MoveFakeTile>().Target = tile.gameObject;
+            fakeTile.DescriptionText = tile.DescriptionText;
+            fakeTile.NumberText = tile.NumberText;
+            fakeTile.transform.position = tile.transform.position;
+            fakeTile.gameObject.SetActive(true);
         }
 
         public void EndDragTile(Tile tile)
         {
+            fakeTile.gameObject.SetActive(false);
+
             float minDistance = Mathf.Abs(tile.transform.position.x - containers[0].transform.position.x);
             ContainerTiles needContainer = containers[0];
 

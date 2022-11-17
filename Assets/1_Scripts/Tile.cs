@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Test
 {
     [RequireComponent(typeof(RectTransform))]
+    [RequireComponent(typeof(LayoutElement))]
     public class Tile : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Text descriptionText, numberText;
@@ -12,21 +14,22 @@ namespace Test
         private ListWindow listWindow;
         private ContainerTiles myContainer;
         private RectTransform rectTransform;
+        private LayoutElement layoutElement;
         private Canvas canvas;
 
         public ContainerTiles SetContainer { set => myContainer = value; }
+        public string DescriptionText { get => descriptionText.text; set { descriptionText.text = value; } }
+        public string NumberText { get => numberText.text; set => numberText.text = value; }
 
         private void Awake()
         {
             rectTransform = GetComponent<RectTransform>();
+            layoutElement = GetComponent<LayoutElement>();
         }
 
-        public void SetData(ListWindow listWindow, string description, int number)
+        public void SetData(ListWindow listWindow)
         {
             this.listWindow = listWindow;
-
-            descriptionText.text = description;
-            numberText.text = number.ToString();
 
             canvas = GetComponentInParent<Canvas>();
         }
@@ -34,6 +37,8 @@ namespace Test
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            layoutElement.ignoreLayout = true;
+
             listWindow.BeginDragTile(this);
             myContainer.RemoveTile(this);
         }
@@ -45,6 +50,8 @@ namespace Test
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            layoutElement.ignoreLayout = false;
+
             listWindow.EndDragTile(this);
         }
     }

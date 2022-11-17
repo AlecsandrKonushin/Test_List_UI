@@ -107,4 +107,3 @@ MonoBehaviour:
   spacing: 20
   animationSpeed: 0.5
   ease: 3
-  newElementOffset: {x: 100, y: 0}

@@ -12,7 +12,7 @@ namespace Test
             return Instantiate(containerPrefab);
         }
 
-        public Tile CreateTileList()
+        public Tile CreateTile()
         {
             return Instantiate(tileListPrefab);
         }
