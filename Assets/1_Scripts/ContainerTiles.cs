@@ -19,6 +19,7 @@ namespace Test
 
         public string SetNameList { set => nameContainer = value; }
         public bool CanAddTile { get => tiles.Count < MAX_TILES_IN_LIST; }
+        public List<Tile> GetTiles { get => tiles; }
 
         public void AddTileInEnd(Tile tile)
         {
