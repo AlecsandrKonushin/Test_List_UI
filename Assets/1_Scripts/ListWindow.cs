@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Test
 {
@@ -7,8 +8,10 @@ namespace Test
     {
         [SerializeField] private GameObject parentContainers;
         [SerializeField] private GameObject parentDragTile;
+        [SerializeField] private Toggle stringToggle, numberToggle;
 
         private List<ContainerTiles> containers = new List<ContainerTiles>();
+        private ContainerTiles sortContainer;
 
         private Tile fakeTile;
         private int countContainers = 2, countTiles = 5;
@@ -29,8 +32,8 @@ namespace Test
             {
                 for (int i = 0; i < countTiles; i++)
                 {
-                    string descriptionTile = "Description";
                     int numberTile = Random.Range(0, 100);
+                    string descriptionTile = "Description_" + numberTile;
 
                     Tile newTile = Creator.Instance.CreateTile();
                     container.AddTileInEnd(newTile);
@@ -39,6 +42,11 @@ namespace Test
                     newTile.NumberText = numberTile.ToString();
                 }
             }
+
+            sortContainer = containers[0];
+
+            stringToggle.onValueChanged.AddListener(delegate { sortContainer.SortByString(stringToggle.isOn); });
+            numberToggle.onValueChanged.AddListener(delegate { sortContainer.SortByString(numberToggle.isOn); });
 
             fakeTile = Creator.Instance.CreateTile();
             fakeTile.transform.SetParent(parentDragTile.transform);
@@ -73,7 +81,14 @@ namespace Test
                 }
             }
 
-            needContainer.AddTileInCenter(tile);
+            if (needContainer.CanAddTile)
+            {
+                needContainer.AddTileInCenter(tile);
+            }
+            else
+            {
+                tile.Container.AddTileInCenter(tile);
+            }
         }
     }
 }

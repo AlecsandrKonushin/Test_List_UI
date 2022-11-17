@@ -1,11 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Test
 {
     public class ContainerTiles : MonoBehaviour
     {
+        private const int MAX_TILES_IN_LIST = 7;
+
         private List<Tile> tiles = new List<Tile>();
+
+        public bool CanAddTile { get => tiles.Count < MAX_TILES_IN_LIST; }
 
         public void AddTileInEnd(Tile tile)
         {
@@ -13,7 +18,7 @@ namespace Test
             tile.transform.SetParent(transform);
             tile.transform.localScale = new Vector3(1, 1, 1);
             tile.transform.position = new Vector3(0, 0, 0);
-            tile.SetContainer = this;
+            tile.Container = this;
         }
 
         public void AddTileInCenter(Tile tile)
@@ -41,7 +46,7 @@ namespace Test
 
             tile.transform.SetParent(transform);
             tile.transform.SetSiblingIndex(indexTile);
-            tile.SetContainer = this;
+            tile.Container = this;
             tiles.Add(tile);
         }
 
@@ -50,6 +55,47 @@ namespace Test
             if (tiles.Contains(tile))
             {
                 tiles.Remove(tile);
+            }
+        }
+
+        public void SortByString(bool up)
+        {
+            if (up)
+            {
+                tiles = tiles.OrderBy(tile => tile.DescriptionText).ToList();
+            }
+            else
+            {
+                tiles = tiles.OrderByDescending(tile => tile.DescriptionText).ToList();
+            }
+
+            foreach (var tile in tiles)
+            {
+                Debug.Log($"{tile.DescriptionText}");
+            }
+
+            SiblingTiles();
+        }
+
+        public void SortByNumber(bool up)
+        {
+            if (up)
+            {
+                tiles = tiles.OrderBy(tile => tile.NumberText).ToList();
+            }
+            else
+            {
+                tiles = tiles.OrderByDescending(tile => tile.NumberText).ToList();
+            }
+
+            SiblingTiles();
+        }
+
+        private void SiblingTiles()
+        {
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                tiles[i].transform.SetSiblingIndex(i);
             }
         }
     }

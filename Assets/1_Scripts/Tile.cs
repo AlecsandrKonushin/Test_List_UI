@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Test
@@ -12,12 +11,11 @@ namespace Test
         [SerializeField] private Text descriptionText, numberText;
 
         private ListWindow listWindow;
-        private ContainerTiles myContainer;
         private RectTransform rectTransform;
         private LayoutElement layoutElement;
         private Canvas canvas;
 
-        public ContainerTiles SetContainer { set => myContainer = value; }
+        public ContainerTiles Container { get; set; }
         public string DescriptionText { get => descriptionText.text; set { descriptionText.text = value; } }
         public string NumberText { get => numberText.text; set => numberText.text = value; }
 
@@ -40,7 +38,7 @@ namespace Test
             layoutElement.ignoreLayout = true;
 
             listWindow.BeginDragTile(this);
-            myContainer.RemoveTile(this);
+            Container.RemoveTile(this);
         }
 
         public void OnDrag(PointerEventData eventData)

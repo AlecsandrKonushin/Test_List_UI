@@ -103,7 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flexibleSize: {x: 0, y: 0}
   layoutPrioruty: 0
-  padding: {x: 50, y: 50, z: 50, w: 50}
+  padding: {x: 50, y: 40, z: 50, w: 50}
   spacing: 20
   animationSpeed: 0.5
   ease: 3
