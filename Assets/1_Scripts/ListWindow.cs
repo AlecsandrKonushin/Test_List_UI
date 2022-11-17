@@ -26,6 +26,7 @@ namespace Test
                 newContainer.transform.SetParent(parentContainers.transform);
                 newContainer.transform.localScale = new Vector3(1, 1, 1);
                 newContainer.transform.position = new Vector3(0, 0, 0);
+                newContainer.SetNameList = "Container_" + i;
             }
 
             foreach (var container in containers)

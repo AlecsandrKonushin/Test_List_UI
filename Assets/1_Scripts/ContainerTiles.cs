@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Test
 {
@@ -8,17 +9,26 @@ namespace Test
     {
         private const int MAX_TILES_IN_LIST = 7;
 
+        [SerializeField] private Text nameText;
+        [SerializeField] private Text countElementsText;
+        [SerializeField] private GameObject parentTiles;
+
         private List<Tile> tiles = new List<Tile>();
 
+        private string nameContainer;
+
+        public string SetNameList { set => nameContainer = value; }
         public bool CanAddTile { get => tiles.Count < MAX_TILES_IN_LIST; }
 
         public void AddTileInEnd(Tile tile)
         {
             tiles.Add(tile);
-            tile.transform.SetParent(transform);
+            tile.transform.SetParent(parentTiles.transform);
             tile.transform.localScale = new Vector3(1, 1, 1);
             tile.transform.position = new Vector3(0, 0, 0);
             tile.Container = this;
+
+            UpdateViewData();
         }
 
         public void AddTileInCenter(Tile tile)
@@ -44,10 +54,12 @@ namespace Test
                 }
             }
 
-            tile.transform.SetParent(transform);
+            tile.transform.SetParent(parentTiles.transform);
             tile.transform.SetSiblingIndex(indexTile);
             tile.Container = this;
             tiles.Add(tile);
+
+            UpdateViewData();
         }
 
         public void RemoveTile(Tile tile)
@@ -56,6 +68,8 @@ namespace Test
             {
                 tiles.Remove(tile);
             }
+
+            UpdateViewData();
         }
 
         public void SortByString(bool up)
@@ -67,11 +81,6 @@ namespace Test
             else
             {
                 tiles = tiles.OrderByDescending(tile => tile.DescriptionText).ToList();
-            }
-
-            foreach (var tile in tiles)
-            {
-                Debug.Log($"{tile.DescriptionText}");
             }
 
             SiblingTiles();
@@ -97,6 +106,12 @@ namespace Test
             {
                 tiles[i].transform.SetSiblingIndex(i);
             }
+        }
+
+        private void UpdateViewData()
+        {
+            nameText.text = nameContainer;
+            countElementsText.text = tiles.Count.ToString();
         }
     }
 }
