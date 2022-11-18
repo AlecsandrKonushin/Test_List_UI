@@ -6,6 +6,7 @@ namespace Test.Save
     [Serializable]
     public class ContainerDataSave
     {
+        public bool TogglesIsActive;
         public List<TileDataSave> Tiles;
     }
 

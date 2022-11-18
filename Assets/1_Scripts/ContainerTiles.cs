@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Test.Save;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,8 @@ namespace Test
         [SerializeField] private Text nameText;
         [SerializeField] private Text countElementsText;
         [SerializeField] private GameObject parentTiles;
+        [SerializeField] private GameObject toggles;
+        [SerializeField] private Toggle stringToggle, numberToggle;
 
         private List<Tile> tiles = new List<Tile>();
 
@@ -20,8 +23,15 @@ namespace Test
         public string SetNameList { set => nameContainer = value; }
         public bool CanAddTile { get => tiles.Count < MAX_TILES_IN_LIST; }
         public List<Tile> GetTiles { get => tiles; }
+        public bool ToggleIsActive { get => toggles.activeSelf; set => toggles.SetActive(value); }
 
-        public void AddTileInEnd(Tile tile)
+        private void Awake()
+        {
+            stringToggle.onValueChanged.AddListener(delegate { SortByString(stringToggle.isOn); });
+            numberToggle.onValueChanged.AddListener(delegate { SortByString(numberToggle.isOn); });
+        }
+
+        public void AddTileInStart(Tile tile)
         {
             tiles.Add(tile);
             tile.transform.SetParent(parentTiles.transform);
@@ -29,10 +39,11 @@ namespace Test
             tile.transform.position = new Vector3(0, 0, 0);
             tile.Container = this;
 
+            SiblingTilesForList();
             UpdateViewData();
         }
 
-        public void AddTileInCenter(Tile tile)
+        public void AddTileAfterDrop(Tile tile)
         {
             int indexTile = 0;
 
@@ -61,6 +72,9 @@ namespace Test
             tiles.Add(tile);
 
             UpdateViewData();
+            EditListBySybling();
+
+            LoadSaveController.Save();
         }
 
         public void RemoveTile(Tile tile)
@@ -84,7 +98,8 @@ namespace Test
                 tiles = tiles.OrderByDescending(tile => tile.DescriptionText).ToList();
             }
 
-            SiblingTiles();
+            SiblingTilesForList();
+            LoadSaveController.Save();
         }
 
         public void SortByNumber(bool up)
@@ -98,15 +113,28 @@ namespace Test
                 tiles = tiles.OrderByDescending(tile => tile.NumberText).ToList();
             }
 
-            SiblingTiles();
+            SiblingTilesForList();
+            LoadSaveController.Save();
         }
 
-        private void SiblingTiles()
+        private void SiblingTilesForList()
         {
             for (int i = 0; i < tiles.Count; i++)
             {
                 tiles[i].transform.SetSiblingIndex(i);
             }
+        }
+
+        private void EditListBySybling()
+        {
+            Tile[] sortTiles = new Tile[tiles.Count];
+
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                sortTiles[tiles[i].transform.GetSiblingIndex()] = tiles[i];
+            }
+
+            tiles = sortTiles.ToList();
         }
 
         private void UpdateViewData()

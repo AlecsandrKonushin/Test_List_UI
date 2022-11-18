@@ -9,8 +9,7 @@ namespace Test
     public class Tile : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField] private Text descriptionText, numberText;
-
-        private ListWindow listWindow;
+        
         private RectTransform rectTransform;
         private LayoutElement layoutElement;
         private Canvas canvas;
@@ -25,24 +24,21 @@ namespace Test
             layoutElement = GetComponent<LayoutElement>();
         }
 
-        public void SetData(ListWindow listWindow)
-        {
-            this.listWindow = listWindow;
-
-            canvas = GetComponentInParent<Canvas>();
-        }
-
-
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if(canvas == null)
+            {
+                canvas = GetComponentInParent<Canvas>();
+            }
+
             layoutElement.ignoreLayout = true;
 
-            listWindow.BeginDragTile(this);
+            ListWindow.Instance.BeginDragTile(this);
             Container.RemoveTile(this);
         }
 
         public void OnDrag(PointerEventData eventData)
-        {
+        {            
             rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
         }
 
@@ -50,7 +46,7 @@ namespace Test
         {
             layoutElement.ignoreLayout = false;
 
-            listWindow.EndDragTile(this);
+            ListWindow.Instance.EndDragTile(this);
         }
     }
 }

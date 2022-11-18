@@ -5,21 +5,23 @@ using UnityEngine;
 
 namespace Test.Save
 {
-    public class LoadSaveController : MonoBehaviour
+    public class LoadSaveController
     {
         private const string PATH_SAVE = "SaveData.json";
 
-        public SaveData SaveData;
+        private static SaveData SaveData;
 
-        public void SaveDecksData(List<ContainerTiles> containers)
+        public static void Save()
         {
             SaveData = new SaveData();
+            List<ContainerTiles> containers = ListWindow.Instance.GetContainers;
             SaveData.ContainersSave = new ContainerDataSave[containers.Count];
 
             for (int i = 0; i < containers.Count; i++)
             {
                 ContainerDataSave containerDataSave = new ContainerDataSave();
                 List<TileDataSave> tilesDataSave = new List<TileDataSave>();
+                containerDataSave.TogglesIsActive = containers[i].ToggleIsActive;
 
                 foreach (var tile in containers[i].GetTiles)
                 {
@@ -46,56 +48,28 @@ namespace Test.Save
             }
         }
 
-        private async void LoadDataFromServer()
+        public static SaveData LoadData()
         {
-
-            // Load data from json
+            SaveData = null;
 
             try
             {
-                AllDecksDataJson deckDataJson;
-
-                if (File.Exists(Application.persistentDataPath + PATH_LOCAL_DECK_DATA))
+                if (File.Exists(Application.persistentDataPath + PATH_SAVE))
                 {
-                    string strLoadJson = File.ReadAllText(Application.persistentDataPath + PATH_LOCAL_DECK_DATA);
-                    deckDataJson = JsonUtility.FromJson<AllDecksDataJson>(strLoadJson);
-                    DeckData deck = null;
-
-                    foreach (var deckJson in deckDataJson.Decks)
-                    {
-                        deck = new DeckData(deckJson.Id, deckJson.NameDeck, deckJson.IsComplete, deckJson.IsSelected, deckJson.IdPresidentCards, deckJson.IdFightCards);
-                        DecksData.Add(deck);
-                    }
+                    string strLoadJson = File.ReadAllText(Application.persistentDataPath + PATH_SAVE);
+                    SaveData = JsonUtility.FromJson<SaveData>(strLoadJson);                    
                 }
                 else
                 {
-                    // TODO: Error LogController because init logController after this comit
-
                     Debug.Log($"Not have file save");
-                }
-
-                // Create Fake id presidents 
-                for (int i = 1; i < 7; i++)
-                {
-                    idPresidents.Add(i.ToString());
-                }
-
-                // Get data presidents from base
-                using (var httpClient = new HttpClient())
-                {
-                    for (int i = 0; i < idPresidents.Count; i++)
-                    {
-                        var json = await httpClient.GetStringAsync(PATH_PRESIDENTS + idPresidents[i]);
-
-                        CardPresidentDataSerialize cardData = JsonUtility.FromJson<CardPresidentDataSerialize>(json);
-                        CardsPresidentsData.Add(cardData);
-                    }
                 }
             }
             catch (Exception ex)
             {
-                Debug.Log($"Error load file save - {ex}");
+                Debug.Log($"<color=red>Error load file save</color> - {ex}");
             }
+
+            return SaveData;
         }
     }
 }
